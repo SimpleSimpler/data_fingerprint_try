@@ -215,13 +215,13 @@ files = [
 
 [[package]]
 name = "data-fingerprint"
-version = "0.1.9"
+version = "0.1.10"
 description = "DataFingerprint is a Python package designed to compare two datasets and generate a detailed report highlighting the differences between them. This tool is particularly useful for data validation, quality assurance, and ensuring data consistency across different sources."
 optional = false
 python-versions = "<4.0,>=3.12"
 files = [
-    {file = "data_fingerprint-0.1.9-py3-none-any.whl", hash = "sha256:b23cdde392d2e7ba57a6c94be180d19b4ddc65fa924bfda96163c3fbed5d4508"},
-    {file = "data_fingerprint-0.1.9.tar.gz", hash = "sha256:3bd3332dfc5130e21cb321e553cc17cade34fe30e0964882cb1a7937d677c006"},
+    {file = "data_fingerprint-0.1.10-py3-none-any.whl", hash = "sha256:3ef09b665e30782ba676c4aef307483dd276767b60c5d18f54f8868eb1c502d4"},
+    {file = "data_fingerprint-0.1.10.tar.gz", hash = "sha256:a38318d13eef92bbb09074dd3fc165baf40f0916e0940bf7b659b93924e1b4e4"},
 ]
 
 [package.dependencies]

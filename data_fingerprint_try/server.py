@@ -1,5 +1,6 @@
 from io import StringIO
 import warnings
+import numbers
 
 import streamlit as st
 import polars as pl
@@ -38,11 +39,11 @@ st.markdown("-----")
 st.markdown("## Try it out")
 
 
-def get_differences(df1, df2, df1_name, df2_name, grouping_columns):
+def get_differences(df1, df2, df1_name, df2_name, grouping_columns, thresholds):
     with warnings.catch_warnings(record=True) as w:
         with st.spinner("Generating report...", show_time=True):
             report: DataReport = get_data_report(
-                df1, df2, df1_name, df2_name, grouping_columns
+                df1, df2, df1_name, df2_name, grouping_columns, thresholds
             )
 
         st.markdown("### Raw Report")
@@ -122,16 +123,33 @@ with upload_tab:
     grouping_columns_upload = st.text_input(
         "Grouping columns (comma separated)", key="grouping_columns_upload"
     )
-    grouping_columns_upload = [
-        col.strip() for col in grouping_columns_upload.split(",")
-    ]
-    if grouping_columns_upload == [""]:
-        grouping_columns_upload = None
+
+    st.markdown("### Define thresholds")
+    thresholds_upload = st.text_area(
+        "Thresholds (combination of 'column_name=threshold', comma separated)",
+        key="thresholds_upload",
+    )
+
     calculate_differences_upload = st.button(
         "Calculate differences", key="calculate_differences_upload"
     )
 
     if calculate_differences_upload:
+        grouping_columns_upload = [
+            col.strip() for col in grouping_columns_upload.split(",")
+        ]
+        if grouping_columns_upload == [""]:
+            grouping_columns_upload = None
+
+        thresholds_upload = [
+            threshold.strip() for threshold in thresholds_upload.split(",")
+        ]
+        thresholds_upload = {
+            threshold.split("=")[0]: float(threshold.split("=")[1])
+            for threshold in thresholds_upload
+            if threshold != ""
+        }
+
         if df0_uploader is None or df1_uploader is None:
             st.error("Please upload both data sources")
             st.stop()
@@ -148,6 +166,7 @@ with upload_tab:
             df0_name_upload,
             df1_name_upload,
             grouping_columns_upload,
+            thresholds_upload,
         )
 
 with example_tab:
@@ -174,17 +193,36 @@ with example_tab:
     grouping_columns_raw = st.text_input(
         "Grouping columns (comma separated)", key="grouping_columns_raw"
     )
-    grouping_columns_raw = [col.strip() for col in grouping_columns_raw.split(",")]
-    if grouping_columns_raw == [""]:
-        grouping_columns_raw = None
+
+    st.markdown("### Define thresholds")
+    thresholds_raw = st.text_area(
+        "Thresholds (combination of 'column_name=threshold', comma separated)",
+        key="thresholds_raw",
+    )
 
     calculate_differences_raw = st.button(
         "Calculate differences", key="calculate_differences_raw"
     )
 
     if calculate_differences_raw:
+        grouping_columns_raw = [col.strip() for col in grouping_columns_raw.split(",")]
+        if grouping_columns_raw == [""]:
+            grouping_columns_raw = None
+
+        thresholds_raw = [threshold.strip() for threshold in thresholds_raw.split(",")]
+        thresholds_raw = {
+            threshold.split("=")[0]: float(threshold.split("=")[1])
+            for threshold in thresholds_raw
+            if threshold != ""
+        }
+
         df1_data = pl.read_csv(StringIO(df0_data_raw))
         df2_data = pl.read_csv(StringIO(df1_data_raw))
         get_differences(
-            df1_data, df2_data, df0_name_raw, df1_name_raw, grouping_columns_raw
+            df1_data,
+            df2_data,
+            df0_name_raw,
+            df1_name_raw,
+            grouping_columns_raw,
+            thresholds_raw,
         )
